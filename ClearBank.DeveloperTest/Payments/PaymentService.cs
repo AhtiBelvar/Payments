@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using ClearBank.DeveloperTest.Accounts;
 using ClearBank.DeveloperTest.Accounts.Storage;
 using ClearBank.DeveloperTest.Payments.Schemes;
 
@@ -23,7 +22,6 @@ public class PaymentService : IPaymentService
     {
         if (_accountStorage == null)
         {
-            // TODO Log error here
             return MakePaymentResult.Failure();
         }
 
@@ -31,13 +29,11 @@ public class PaymentService : IPaymentService
 
         if (account == null)
         {
-            // TODO Log informational
             return MakePaymentResult.Failure();
         }
 
         if (!_paymentSchemes.TryGetValue(request.PaymentScheme, out var paymentScheme))
         {
-            // TODO Log informational
             return MakePaymentResult.Failure();
         }
 

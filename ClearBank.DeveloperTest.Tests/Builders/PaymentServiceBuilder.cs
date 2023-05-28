@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using ClearBank.DeveloperTest.Accounts.Storage;
 using ClearBank.DeveloperTest.Payments;
 using ClearBank.DeveloperTest.Payments.Schemes;
@@ -14,9 +13,9 @@ public class PaymentServiceBuilder
         new ChapsPaymentScheme(),
         new FasterPaymentsScheme()
     };
-    private IAccountStore _accountStore = new StubAccountStore();
+    private StubAccountStore _accountStore = new StubAccountStore();
 
-    public PaymentServiceBuilder WithAccountStore(IAccountStore store)
+    public PaymentServiceBuilder WithAccountStore(StubAccountStore store)
     {
         _accountStore = store;
         return this;
