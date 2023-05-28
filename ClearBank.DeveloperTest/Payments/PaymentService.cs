@@ -5,29 +5,29 @@ namespace ClearBank.DeveloperTest.Payments;
 
 public class PaymentService : IPaymentService
 {
-    private readonly IAccountStore _accountsStorage;
+    private readonly IAccountStore _accountStorage;
 
-    public PaymentService(IAccountStore accountsStorage)
+    public PaymentService(IAccountStore accountStorage)
     {
-        _accountsStorage = accountsStorage;
+        _accountStorage = accountStorage;
     }
 
     public MakePaymentResult MakePayment(MakePaymentRequest request)
     {
         var result = new MakePaymentResult();
 
-        if (_accountsStorage == null)
+        if (_accountStorage == null)
         {
             // TODO Log error here
-            return BuildFailureResult();
+            return MakePaymentResult.Failure();
         }
 
-        var account = _accountsStorage?.GetAccount(request.DebtorAccountNumber);
+        var account = _accountStorage.GetAccount(request.DebtorAccountNumber);
 
         if (account == null)
         {
             // TODO Log informational
-            return BuildFailureResult();
+            return MakePaymentResult.Failure();
         }
 
         switch (request.PaymentScheme)
@@ -35,44 +35,36 @@ public class PaymentService : IPaymentService
             case PaymentScheme.Bacs:
                 if (!account.AllowedPaymentSchemes.HasFlag(AllowedPaymentSchemes.Bacs))
                 {
-                    result.Success = false;
+                    return MakePaymentResult.Failure();
                 }
                 break;
 
             case PaymentScheme.FasterPayments:
                 if (!account.AllowedPaymentSchemes.HasFlag(AllowedPaymentSchemes.FasterPayments))
                 {
-                    result.Success = false;
+                    return MakePaymentResult.Failure();
                 }
                 else if (account.Balance < request.Amount)
                 {
-                    result.Success = false;
+                    return MakePaymentResult.Failure();
                 }
                 break;
 
             case PaymentScheme.Chaps:
                 if (!account.AllowedPaymentSchemes.HasFlag(AllowedPaymentSchemes.Chaps))
                 {
-                    result.Success = false;
+                    return MakePaymentResult.Failure();
                 }
                 else if (account.Status != AccountStatus.Live)
                 {
-                    result.Success = false;
+                    return MakePaymentResult.Failure();
                 }
                 break;
         }
 
-        if (result.Success)
-        {
-            account.Balance -= request.Amount;
-            _accountsStorage.UpdateAccount(account);
-        }
+        account.Balance -= request.Amount;
+        _accountStorage.UpdateAccount(account);
 
-        return result;
-    }
-
-    private MakePaymentResult BuildFailureResult()
-    {
-        return new MakePaymentResult { Success = false };
+        return MakePaymentResult.Succeeded();
     }
 }
