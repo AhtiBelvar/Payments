@@ -1,6 +1,6 @@
 namespace ClearBank.DeveloperTest.Accounts.Storage;
 
-public interface IAccountsStore
+public interface IAccountStore
 {
     Account GetAccount(string accountNumber);
 

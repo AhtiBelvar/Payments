@@ -1,5 +1,7 @@
 using System;
+using ClearBank.DeveloperTest.Accounts.Storage;
 using ClearBank.DeveloperTest.Payments;
+using ClearBank.DeveloperTest.Tests.Builders;
 using FluentAssertions;
 using Xunit;
 
@@ -7,17 +9,26 @@ namespace ClearBank.DeveloperTest.Tests;
 
 public class PaymentServiceTests
 {
-    private static PaymentService BuildPaymentsService()
+    [Fact]
+    public void GivenAccountStoreIsNull_WhenMakingPayment_ThenPaymentFails()
     {
-        return new PaymentService();
-    }
+        var service = new PaymentServiceBuilder()
+            .WithAccountStore(null)
+            .Build();
+        var request = new MakePaymentRequest
+        {
+            DebtorAccountNumber = Guid.NewGuid().ToString()
+        };
 
-    // GivenAccountStoreIsNull_WhenMakingPayment_ThenPaymentFails
+        var result = service.MakePayment(request);
+        result.Should().NotBeNull();
+        result.Success.Should().BeFalse();
+    }
 
     [Fact]
     public void GivenNonExistentAccount_WhenMakingPayment_ThenPaymentFails()
     {
-        var service = BuildPaymentsService();
+        var service = new PaymentServiceBuilder().Build();
         var request = new MakePaymentRequest
         {
             DebtorAccountNumber = Guid.NewGuid().ToString()
