@@ -1,6 +1,5 @@
 using System;
 using ClearBank.DeveloperTest.Accounts;
-using ClearBank.DeveloperTest.Accounts.Storage;
 using ClearBank.DeveloperTest.Payments;
 using ClearBank.DeveloperTest.Tests.Builders;
 using ClearBank.DeveloperTest.Tests.Stubs;
